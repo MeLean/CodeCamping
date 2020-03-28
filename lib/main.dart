@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:quatrace/pages/home-page.dart';
+import 'package:quatrace/pages/sign-up.dart';
+import 'package:quatrace/utils/location-util.dart';
 import 'package:quatrace/utils/push-controller.dart';
 
 void main() => runApp(MyApp());
@@ -16,6 +17,8 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     PushNotifications.initializeListeners(showMessage);
+    LocationUtil().enableService();
+    LocationUtil().getPermission();
   }
 
   showMessage(message) {
@@ -52,7 +55,9 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomePage(),
+      home: SafeArea(
+        child: HomePage(),
+      ),
     );
   }
 }

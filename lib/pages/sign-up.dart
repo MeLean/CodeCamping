@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:quatrace/models/user.dart';
+import 'package:quatrace/pages/home-page.dart';
 import 'package:quatrace/utils/api-util.dart';
 import 'package:quatrace/utils/location-util.dart';
-import 'package:quatrace/utils/push-controller.dart';
+import 'package:quatrace/utils/push-util.dart';
 
 class SignUp extends StatefulWidget {
   SignUp({Key key}) : super(key: key);
@@ -47,12 +50,13 @@ class _SignUpState extends State<SignUp> {
       _nameController.text.trim(),
       _emailController.text.trim(),
       _fcmKey,
-      _location.latitude,
-      _location.longitude,
+      _location['lat'],
+      _location['lng'],
       _phoneController.text.trim(),
       _unixTimestamp.toInt(),
     );
     await APIUtil().signUp(_user.toJson());
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => HomePage()));
   }
 
   @override

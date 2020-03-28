@@ -29,8 +29,12 @@ class LocationUtil {
     }
   }
 
-  Future<LocationData> getLocation() async {
+  Future<Map<String, dynamic>> getLocation() async {
     _locationData = await location.getLocation();
-    return _locationData;
+    Map<String, dynamic> parsedLocation = {
+      'lat': _locationData.latitude,
+      'lng': _locationData.longitude
+    };
+    return parsedLocation;
   }
 }

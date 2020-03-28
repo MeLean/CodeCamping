@@ -6,6 +6,9 @@ class User {
   double lng;
   String fcmKey;
   int quarantineDate;
+  List _quarantineEntries = [];
+
+  List get quarantineEntries => _quarantineEntries;
 
   User(this.name,this.email, this.fcmKey, this.lat,
       this.lng, this.phone, this.quarantineDate);
@@ -14,10 +17,12 @@ class User {
     this.name = data['name'];
     this.email = data['email'];
     this.phone = data['phone'];
-    this.lat = data['lat'];
-    this.lng = data['lng'];
+    this.lat = double.parse(data['lat']);
+    this.lng = double.parse(data['lng']);
     this.fcmKey = data['fcm_key'];
-    this.quarantineDate = data['quaranthine_date'];
+    final parsedDate = DateTime.parse(data['quarantine_date']).millisecondsSinceEpoch / 1000;
+    this.quarantineDate = parsedDate.toInt();
+    data['verifications'].forEach((k, v) => this._quarantineEntries.add(v));
   }
 
   Map<String, dynamic> toJson() {
@@ -28,7 +33,7 @@ class User {
       'lat': this.lat,
       'lng': this.lng,
       'fcm_key': this.fcmKey,
-      'quaranthine_date': this.quarantineDate,
+      'quarantine_date': this.quarantineDate,
     };
   }
 }

@@ -4,16 +4,24 @@ import 'package:quatrace/models/user.dart';
 import 'package:http/http.dart' as http;
 
 class APIUtil {
-  APIUtil();
-  String _domain = '89568f1c.ngrok.io';
+  static final APIUtil _apiUrl = APIUtil._internal();
+
+  factory APIUtil() {
+    return _apiUrl;
+  }
+
+  APIUtil._internal();
+  String _domain = '9b9c1283.ngrok.io';
   Map<String, String> _paths = {
     'token': '/api/auth/token',
     'userDetails': '/api/me',
     'signUp': '/api/auth/signup',
-    'notification': '/api/notify'
+    'notification': '/api/verifications/new'
   };
   String _token;
-  String _notificationToken;
+  String _notificationToken = '';
+
+  get notificationTokenLength => _notificationToken.length;
 
   Map<String, String> getHeaders(bool authorized) {
     if (authorized) {
@@ -30,25 +38,32 @@ class APIUtil {
     this._notificationToken = notificationToken;
   }
 
-  Future<void> getToken(fcmKey) async {
+  Future<bool> getToken(fcmKey) async {
     try {
       final response = await http.get(
         Uri.http(this._domain, this._paths['token'], {"fcm_key": fcmKey}),
-        headers: this.getHeaders(false),
+        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
       );
       this._token = jsonDecode(response.body)['access_token'];
-      print(this._token);
+      if (response.statusCode != 200) {
+        return false;
+      }
+      return true;
     } catch (e) {
-      throw(e);
+      throw (e);
     }
   }
 
   Future<User> getUserDetails() async {
     try {
       final response = await http.get(
-          Uri.http(this._domain, this._paths['userDetails']),
-          headers: this.getHeaders(true));
-      print(User.fromJson(jsonDecode(response.body)));
+        Uri.http(this._domain, this._paths['userDetails']),
+        headers: {
+          'Authorization': "Bearer ${this._token}",
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+      );
       return User.fromJson(jsonDecode(response.body));
     } catch (e) {
       throw (e);
@@ -59,8 +74,8 @@ class APIUtil {
     try {
       final response = await http.post(
         Uri.http(this._domain, this._paths['signUp']),
-        headers: this.getHeaders(true),
-        body: payload,
+        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+        body: jsonEncode(payload),
       );
       return User.fromJson(jsonDecode(response.body));
     } catch (e) {
@@ -77,9 +92,16 @@ class APIUtil {
       final response = await http.post(
         Uri.http(this._domain, this._paths['notification']),
         headers: this.getHeaders(true),
-        body: payload,
+        body: {
+          'Authorization': "Bearer ${this._token}",
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
       );
-      return jsonDecode(response.body);
+      if (response.statusCode != 200) {
+        return false;
+      }
+      return true;
     } catch (e) {
       throw (e);
     }

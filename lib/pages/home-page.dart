@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:quatrace/pages/send-location.dart';
 import 'package:flutter/services.dart';
+import 'package:quatrace/pages/statistics.dart';
 import 'package:quatrace/utils/api-util.dart';
-import 'package:quatrace/utils/push-controller.dart';
+import 'package:quatrace/utils/location-util.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key key}) : super(key: key);
-
+  const HomePage();
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final LocalAuthentication _localAuthentication = LocalAuthentication();
+  @override
+  void initState() {
+    super.initState();
+    _authenticateUser();
+  }
 
+  final LocalAuthentication _localAuthentication = LocalAuthentication();
   Future<void> _authenticateUser() async {
     bool isAuthenticated = false;
     try {
@@ -31,12 +35,13 @@ class _HomePageState extends State<HomePage> {
     if (!mounted) return;
 
     if (isAuthenticated) {
-      // final String fcmToken = await PushNotifications().register();
-      await APIUtil().getToken('test-key');
-      await APIUtil().getUserDetails();
+      if (APIUtil().notificationTokenLength > 0) {
+        Map<String, dynamic> _location = await LocationUtil().getLocation();
+        await APIUtil().sentLocation(_location);
+      }
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => SendLocation(),
+          builder: (context) => Statistics(),
         ),
       );
     }
@@ -44,17 +49,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: Center(
-        child: RaisedButton(
-          onPressed: () async {
-            await _authenticateUser();
-          },
-          color: Colors.greenAccent,
-          child: Text("Authenticate"),
-        ),
-      ),
-    );
+    return Container(color: Colors.white);
   }
 }

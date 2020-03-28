@@ -1,13 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:quatrace/pages/home-page.dart';
 import 'package:quatrace/pages/sign-up.dart';
+import 'package:quatrace/utils/api-util.dart';
 import 'package:quatrace/utils/location-util.dart';
-import 'package:quatrace/utils/push-controller.dart';
+import 'package:quatrace/utils/push-util.dart';
 
-void main() => runApp(MyApp());
+Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
+  if (message.containsKey('data')) {
+    // Handle data message
+    print('Should fire');
+  }
+
+  if (message.containsKey('notification')) {
+    // Handle notification message
+  }
+
+    debugPrint('Damnnnn');
+  // Or do other work.
+}
+
+final navigatorKey = GlobalKey<NavigatorState>();
+
+
+
+void main() => runApp(MaterialApp(
+      title: 'Quatrace',
+      navigatorKey: navigatorKey,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MyApp(),
+    ));
 
 class MyApp extends StatefulWidget {
-  final navigatorKey = GlobalKey<NavigatorState>();
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -16,15 +41,29 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    PushNotifications.initializeListeners(showMessage);
+    PushNotifications.initializeListeners(showMessage, myBackgroundMessageHandler);
     LocationUtil().enableService();
     LocationUtil().getPermission();
+    _isItRegistered();
+  }
+
+  _isItRegistered() async {
+    final String fcmToken = await PushNotifications().register();
+    final bool isRegistered = await APIUtil().getToken(fcmToken);
+    if (isRegistered) {
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (BuildContext context) => HomePage()));
+    } else {
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (BuildContext context) => SignUp()));
+    }
   }
 
   showMessage(message) {
-    final currentContext = widget.navigatorKey.currentState.overlay.context;
+    final currentContext = navigatorKey.currentState.overlay.context;
     showDialog(
       context: currentContext,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(message['notification']['title']),
@@ -49,14 +88,24 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: widget.navigatorKey,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: SafeArea(
-        child: HomePage(),
+    return SafeArea(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
+            child: Container(
+                height: 220.0,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15.0),
+                  color: Colors.white,
+                ),
+                alignment: Alignment.center,
+                child: CircularProgressIndicator(
+                  strokeWidth: 5.0,
+                )),
+          )
+        ],
       ),
     );
   }

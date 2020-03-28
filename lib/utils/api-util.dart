@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:quatrace/models/user.dart';
 import 'package:http/http.dart' as http;
+import 'package:quatrace/utils/push-util.dart';
 
 class APIUtil {
   static final APIUtil _apiUrl = APIUtil._internal();
@@ -19,7 +20,7 @@ class APIUtil {
     'signUp': '/api/auth/signup',
     'notification': '/api/verifications/new'
   };
-  String _token;
+  String _token = '';
   String _notificationToken = '';
 
   get notificationTokenLength => _notificationToken.length;
@@ -71,14 +72,17 @@ class APIUtil {
     }
   }
 
-  Future<User> signUp(payload) async {
+  Future<bool> signUp(payload) async {
     try {
       final response = await http.post(
         Uri.http(this._domain, this._paths['signUp']),
         headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
         body: jsonEncode(payload),
       );
-      return User.fromJson(jsonDecode(response.body));
+      if(response.statusCode != 201) {
+        return false;
+      }
+      return true;
     } catch (e) {
       throw (e);
     }

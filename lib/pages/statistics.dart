@@ -41,7 +41,9 @@ class _StatisticsState extends State<Statistics> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             _isLoading == true
-                ? Container(alignment: Alignment.center, child: CircularProgressIndicator())
+                ? Container(
+                    alignment: Alignment.center,
+                    child: CircularProgressIndicator())
                 : Expanded(
                     child: _showQuarantines(context, _currentUser),
                   )
@@ -53,6 +55,13 @@ class _StatisticsState extends State<Statistics> {
 }
 
 _showQuarantines(BuildContext context, User currentUser) {
+  if (currentUser.quarantineEntries.length == 0) {
+    return Center(
+        child: Text(
+      "No entries yet",
+      style: TextStyle(fontSize: 22.00, color: Theme.of(context).primaryColor),
+    ));
+  }
   return ListView.builder(
     scrollDirection: Axis.vertical,
     shrinkWrap: true,

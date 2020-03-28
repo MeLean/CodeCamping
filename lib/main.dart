@@ -24,6 +24,7 @@ final navigatorKey = GlobalKey<NavigatorState>();
 void main() => runApp(MaterialApp(
       title: 'Quatrace',
       navigatorKey: navigatorKey,
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

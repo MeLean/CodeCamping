@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:quatrace/pages/statistics.dart';
 import 'package:quatrace/utils/api-util.dart';
 import 'package:quatrace/utils/location-util.dart';
+import 'package:quatrace/utils/push-util.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage();
@@ -35,6 +36,8 @@ class _HomePageState extends State<HomePage> {
     if (!mounted) return;
 
     if (isAuthenticated) {
+      final fcmToken = await PushNotifications(context).register();
+      await APIUtil().getToken(fcmToken);
       if (APIUtil().notificationTokenLength > 0) {
         Map<String, dynamic> _location = await LocationUtil().getLocation();
         await APIUtil().sentLocation(_location);

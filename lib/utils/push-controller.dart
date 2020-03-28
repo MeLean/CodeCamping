@@ -9,8 +9,7 @@ class PushNotifications with ChangeNotifier {
 
   Future<String> register() async {
     try {
-      final token = await _firebaseMessaging.getToken();
-      return token;
+      return await _firebaseMessaging.getToken();
     } catch (e) {
       throw (e);
     }
@@ -19,6 +18,7 @@ class PushNotifications with ChangeNotifier {
   PushNotifications.initializeListeners(showMessage) {
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
+        print(message);
         showMessage(message);
       }
     );

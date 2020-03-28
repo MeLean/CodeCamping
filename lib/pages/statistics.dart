@@ -32,16 +32,19 @@ class _StatisticsState extends State<Statistics> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Quatrace"),
+        title: Text('Quatrace'),
         centerTitle: true,
       ),
-      body: Center(
+      body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             _isLoading == true
-                ? CircularProgressIndicator()
-                : Expanded(child: _showQuarantines(context, _currentUser),)
+                ? Container(alignment: Alignment.center, child: CircularProgressIndicator())
+                : Expanded(
+                    child: _showQuarantines(context, _currentUser),
+                  )
           ],
         ),
       ),
@@ -56,10 +59,11 @@ _showQuarantines(BuildContext context, User currentUser) {
     itemCount: currentUser.quarantineEntries.length,
     itemBuilder: (BuildContext context, int index) {
       return ListTile(
-        title: Text(currentUser.quarantineEntries[index]['status'] ),
-        subtitle: Text(currentUser.quarantineEntries[index]['pn_send_at'] != null
-            ? currentUser.quarantineEntries[index]['pn_send_at']
-            : ''),
+        title: Text(currentUser.quarantineEntries[index]['status']),
+        subtitle: Text(
+            currentUser.quarantineEntries[index]['pn_send_at'] != null
+                ? currentUser.quarantineEntries[index]['pn_send_at']
+                : ''),
         trailing: IconButton(
           icon: Icon(Icons.info),
           color: Theme.of(context).primaryColor,

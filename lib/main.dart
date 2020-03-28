@@ -15,13 +15,11 @@ Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
     // Handle notification message
   }
 
-    debugPrint('Damnnnn');
+  debugPrint('Damnnnn');
   // Or do other work.
 }
 
 final navigatorKey = GlobalKey<NavigatorState>();
-
-
 
 void main() => runApp(MaterialApp(
       title: 'Quatrace',
@@ -41,14 +39,15 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    PushNotifications.initializeListeners(showMessage, myBackgroundMessageHandler);
+    PushNotifications.initializeListeners(
+        showMessage, myBackgroundMessageHandler);
     LocationUtil().enableService();
     LocationUtil().getPermission();
     _isItRegistered();
   }
 
   _isItRegistered() async {
-    final String fcmToken = await PushNotifications().register();
+    final String fcmToken = await PushNotifications(context).register();
     final bool isRegistered = await APIUtil().getToken(fcmToken);
     if (isRegistered) {
       Navigator.pushReplacement(context,
@@ -88,24 +87,30 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
-            child: Container(
-                height: 220.0,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15.0),
-                  color: Colors.white,
-                ),
-                alignment: Alignment.center,
-                child: CircularProgressIndicator(
-                  strokeWidth: 5.0,
-                )),
-          )
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Quatrace"),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
+              child: Container(
+                  height: 220.0,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15.0)
+                  ),
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 5.0,
+                  )),
+            )
+          ],
+        ),
       ),
     );
   }

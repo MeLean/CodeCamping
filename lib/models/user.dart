@@ -22,7 +22,7 @@ class User {
     this.fcmKey = data['fcm_key'];
     final parsedDate = DateTime.parse(data['quarantine_date']).millisecondsSinceEpoch / 1000;
     this.quarantineDate = parsedDate.toInt();
-    data['verifications'].forEach((k, v) => this._quarantineEntries.add(v));
+    this._quarantineEntries = data['verifications'];
   }
 
   Map<String, dynamic> toJson() {

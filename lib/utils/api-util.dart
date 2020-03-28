@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:quatrace/models/user.dart';
 import 'package:http/http.dart' as http;
 
@@ -85,22 +86,23 @@ class APIUtil {
 
   Future<bool> sentLocation(Map<String, dynamic> payload) async {
     if (this._notificationToken.length > 0) {
-      payload['notification-token'] = this._notificationToken;
+      payload['token'] = this._notificationToken;
     }
 
     try {
       final response = await http.post(
         Uri.http(this._domain, this._paths['notification']),
-        headers: this.getHeaders(true),
-        body: {
+        headers: {
           'Authorization': "Bearer ${this._token}",
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
+        body: jsonEncode(payload),
       );
       if (response.statusCode != 200) {
         return false;
       }
+      debugPrint('Everything was ok with the notification');
       return true;
     } catch (e) {
       throw (e);

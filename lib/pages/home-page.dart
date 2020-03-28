@@ -49,6 +49,12 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(color: Colors.white);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Quatrace'),
+        centerTitle: true,
+      ),
+      body: Container(),
+    );
   }
 }

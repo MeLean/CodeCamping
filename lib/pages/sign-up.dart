@@ -21,7 +21,6 @@ class _SignUpState extends State<SignUp> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _locationUtils = LocationUtil();
-  final _pushController = PushNotifications();
 
   DateTime _initialDate = DateTime.now();
   String _parsedDate =
@@ -44,6 +43,7 @@ class _SignUpState extends State<SignUp> {
 
   void _submitFormData() async {
     final _location = await _locationUtils.getLocation();
+    final _pushController = PushNotifications(context);
     final _fcmKey = await _pushController.register();
     double _unixTimestamp = _actualDate.millisecondsSinceEpoch / 1000;
     User _user = new User(

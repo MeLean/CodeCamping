@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1048213549782",
+    "firebase_url": "https://quatrace.firebaseio.com",
+    "project_id": "quatrace",
+    "storage_bucket": "quatrace.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1048213549782:android:802aff9141adfb9d280f77",
+        "android_client_info": {
+          "package_name": "com.quatrace.flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1048213549782-u9d0dvltktm12k6gm1hd0a6k9ftpm01b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjMwKLyE0IT-hkWvwLpsUG0Yv9JXXgIZc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1048213549782-u9d0dvltktm12k6gm1hd0a6k9ftpm01b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

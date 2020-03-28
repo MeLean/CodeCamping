@@ -12,7 +12,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final LocalAuthentication _localAuthentication = LocalAuthentication();
-  
+
   Future<void> _authenticateUser() async {
     bool isAuthenticated = false;
     try {
@@ -28,12 +28,8 @@ class _HomePageState extends State<HomePage> {
 
     if (!mounted) return;
 
-    isAuthenticated
-        ? print('User is authenticated!')
-        : print('User is not authenticated.');
-
     if (isAuthenticated) {
-      Navigator.of(context).push(
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => SendLocation(),
         ),

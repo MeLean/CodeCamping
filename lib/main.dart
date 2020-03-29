@@ -8,15 +8,11 @@ import 'package:quatrace/utils/push-util.dart';
 Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
   if (message.containsKey('data')) {
     // Handle data message
-    print('Should fire');
   }
 
   if (message.containsKey('notification')) {
     // Handle notification message
   }
-
-  debugPrint('Damnnnn');
-  // Or do other work.
 }
 
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -26,8 +22,7 @@ void main() => runApp(MaterialApp(
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+          primarySwatch: Colors.blue, primaryColor: Colors.greenAccent),
       home: MyApp(),
     ));
 
@@ -66,7 +61,13 @@ class _MyAppState extends State<MyApp> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(message['notification']['title']),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          title: Text(
+            message['notification']['title'],
+            style: TextStyle(color: Colors.red.shade900),
+          ),
           content: Text(message['notification']['body']),
           actions: <Widget>[
             FlatButton(
@@ -78,7 +79,10 @@ class _MyAppState extends State<MyApp> {
                   ),
                 );
               },
-              child: Text("Verify"),
+              child: Text(
+                "Verify",
+                style: TextStyle(color: Colors.greenAccent, fontSize: 18.0),
+              ),
             )
           ],
         );
@@ -90,8 +94,14 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Quatrace"),
+        title: Text(
+          'Quatrace',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
         centerTitle: true,
+        backgroundColor: Colors.greenAccent,
       ),
       body: SafeArea(
         child: Column(
@@ -102,13 +112,12 @@ class _MyAppState extends State<MyApp> {
               padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
               child: Container(
                   height: 220.0,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15.0)
-                  ),
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(15.0)),
                   alignment: Alignment.center,
                   child: CircularProgressIndicator(
-                    strokeWidth: 5.0,
-                  )),
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(Colors.greenAccent))),
             )
           ],
         ),

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:quatrace/models/user.dart';
@@ -21,6 +19,7 @@ class _SignUpState extends State<SignUp> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _locationUtils = LocationUtil();
+  bool _isLoading = false;
 
   DateTime _initialDate = DateTime.now();
   String _parsedDate =
@@ -29,10 +28,23 @@ class _SignUpState extends State<SignUp> {
 
   void showPicker(_context) async {
     final DateTime picked = await showDatePicker(
-        context: _context,
-        initialDate: _initialDate,
-        firstDate: _initialDate,
-        lastDate: DateTime(2030));
+      context: _context,
+      initialDate: _initialDate,
+      firstDate: _initialDate,
+      lastDate: DateTime(2030),
+      builder: (BuildContext context, Widget child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            buttonColor: Colors.greenAccent,
+            primaryColor: Colors.greenAccent, //Head background
+            accentColor: Colors.greenAccent, //selection color
+            colorScheme: ColorScheme.light(primary: Colors.greenAccent),
+            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+          ),
+          child: child,
+        );
+      },
+    );
     if (picked != null) {
       setState(() {
         _parsedDate = DateFormat('dd MMM yyyy').format(picked).toString();
@@ -42,6 +54,9 @@ class _SignUpState extends State<SignUp> {
   }
 
   void _submitFormData() async {
+    setState(() {
+      this._isLoading = true;
+    });
     final _location = await _locationUtils.getLocation();
     final _pushController = PushNotifications(context);
     final _fcmKey = await _pushController.register();
@@ -58,85 +73,121 @@ class _SignUpState extends State<SignUp> {
     await APIUtil().signUp(_user.toJson());
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: (BuildContext context) => HomePage()));
+    setState(() {
+      this._isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Quatrace'),
+          title: Text(
+            'Quatrace',
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
           centerTitle: true,
+          backgroundColor: Colors.greenAccent,
         ),
-        body: Container(
-          color: Colors.grey.shade300,
-          padding: EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Card(
-                child: Padding(
-                  padding: EdgeInsets.all(20.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: <Widget>[
-                        TextFormField(
-                          controller: _nameController,
-                          decoration: InputDecoration(
-                            labelText: 'Name',
+        backgroundColor: Colors.grey.shade300,
+        body: Center(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                _isLoading
+                    ? CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Colors.greenAccent))
+                    : Card(
+                        child: Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              children: <Widget>[
+                                TextFormField(
+                                  controller: _nameController,
+                                  decoration: InputDecoration(
+                                    labelText: 'Name',
+                                  ),
+                                ),
+                                TextFormField(
+                                  controller: _emailController,
+                                  keyboardType: TextInputType.emailAddress,
+                                  decoration: InputDecoration(
+                                    labelText: 'Email',
+                                  ),
+                                ),
+                                TextFormField(
+                                  controller: _phoneController,
+                                  keyboardType: TextInputType.phone,
+                                  decoration: InputDecoration(
+                                    labelText: 'Phone',
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(top: 20.0),
+                                ),
+                                Container(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        "Quarantine end date",
+                                        style: TextStyle(
+                                            fontSize: 18.0,
+                                            color: Colors.grey.shade600),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: <Widget>[
+                                          Text(
+                                            "$_parsedDate",
+                                            style: TextStyle(
+                                                fontSize: 15.0,
+                                                color: Colors.black),
+                                          ),
+                                          IconButton(
+                                            onPressed: () =>
+                                                showPicker(context),
+                                            icon: Icon(Icons.date_range),
+                                            color: Colors.greenAccent,
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(top: 20.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      FlatButton(
+                                        onPressed: _submitFormData,
+                                        child: Text('Submit'),
+                                        color: Colors.green,
+                                        textColor: Colors.white,
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         ),
-                        TextFormField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: InputDecoration(
-                            labelText: 'Email',
-                          ),
-                        ),
-                        TextFormField(
-                          controller: _phoneController,
-                          keyboardType: TextInputType.phone,
-                          decoration: InputDecoration(
-                            labelText: 'Phone',
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 20.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Text(_parsedDate),
-                              FlatButton(
-                                onPressed: () => showPicker(context),
-                                child: Icon(Icons.date_range),
-                                color: Colors.greenAccent,
-                                textColor: Colors.white,
-                              )
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 20.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              FlatButton(
-                                onPressed: _submitFormData,
-                                child: Text('Submit'),
-                                color: Colors.lightBlue,
-                                textColor: Colors.white,
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
+                      ),
+              ],
+            ),
           ),
         ));
   }

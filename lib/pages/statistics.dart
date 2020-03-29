@@ -32,8 +32,14 @@ class _StatisticsState extends State<Statistics> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Quatrace'),
+        title: Text(
+          'Quatrace',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
         centerTitle: true,
+        backgroundColor: Colors.greenAccent,
       ),
       body: SafeArea(
         child: Column(
@@ -43,7 +49,9 @@ class _StatisticsState extends State<Statistics> {
             _isLoading == true
                 ? Container(
                     alignment: Alignment.center,
-                    child: CircularProgressIndicator())
+                    child: CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Colors.greenAccent)))
                 : Expanded(
                     child: _showQuarantines(context, _currentUser),
                   )
@@ -54,33 +62,56 @@ class _StatisticsState extends State<Statistics> {
   }
 }
 
+Color colorBasedOnStatus(String status) {
+  if (status == 'APPROVED') {
+    return Colors.green;
+  }
+  if (status == 'REJECTED') {
+    return Colors.red;
+  }
+  return Colors.blueAccent;
+}
+
 _showQuarantines(BuildContext context, User currentUser) {
   if (currentUser.quarantineEntries.length == 0) {
-    return Center(
+    return Container(
+      color: Colors.grey.shade200,
+      child: Center(
         child: Text(
-      "No entries yet",
-      style: TextStyle(fontSize: 22.00, color: Theme.of(context).primaryColor),
-    ));
-  }
-  return ListView.builder(
-    scrollDirection: Axis.vertical,
-    shrinkWrap: true,
-    itemCount: currentUser.quarantineEntries.length,
-    itemBuilder: (BuildContext context, int index) {
-      return ListTile(
-        title: Text(currentUser.quarantineEntries[index]['status']),
-        subtitle: Text(
-            currentUser.quarantineEntries[index]['pn_send_at'] != null
-                ? currentUser.quarantineEntries[index]['pn_send_at']
-                : ''),
-        trailing: IconButton(
-          icon: Icon(Icons.info),
-          color: Theme.of(context).primaryColor,
-          onPressed: () {
-            print(currentUser.quarantineEntries[index]);
-          },
+          "No entries yet",
+          style: TextStyle(fontSize: 22.00, color: Colors.green),
         ),
-      );
-    },
+      ),
+    );
+  }
+  final List entries = currentUser.quarantineEntries;
+  return Container(
+    color: Colors.grey.shade200,
+    child: ListView.builder(
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      padding: EdgeInsets.all(5.0),
+      itemCount: entries.length,
+      itemBuilder: (BuildContext context, int index) {
+        return Card(
+          child: ListTile(
+            title: Text(
+              entries[index]['status'],
+              style: TextStyle(
+                  color: colorBasedOnStatus(entries[index]['status']),
+                  fontSize: 18.0),
+            ),
+            subtitle: Row(
+              children: <Widget>[
+                Text("Expires at "),
+                Text(entries[index]['expires_at'] != null
+                    ? entries[index]['expires_at']
+                    : '')
+              ],
+            ),
+          ),
+        );
+      },
+    ),
   );
 }

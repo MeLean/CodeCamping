@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:quatrace/models/user.dart';
 import 'package:http/http.dart' as http;
-import 'package:quatrace/utils/push-util.dart';
 
 class APIUtil {
   static final APIUtil _apiUrl = APIUtil._internal();
@@ -13,7 +12,7 @@ class APIUtil {
   }
 
   APIUtil._internal();
-  String _domain = '9b9c1283.ngrok.io';
+  String _domain = '3452c037.ngrok.io';
   Map<String, String> _paths = {
     'token': '/api/auth/token',
     'userDetails': '/api/me',
@@ -106,7 +105,6 @@ class APIUtil {
       if (response.statusCode != 200) {
         return false;
       }
-      debugPrint('Everything was ok with the notification');
       return true;
     } catch (e) {
       throw (e);

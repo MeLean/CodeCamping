@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:quatrace/models/user.dart';
 import 'package:quatrace/utils/api-util.dart';
 
@@ -62,6 +63,76 @@ class _StatisticsState extends State<Statistics> {
   }
 }
 
+showInfoDialog(information, context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        title: Text(
+          "Validation infromation",
+          style: TextStyle(color: Colors.green),
+        ),
+        content: Container(
+         child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Text("Status: "),
+                  Text(information['status'],
+                      style: TextStyle(
+                          color: colorBasedOnStatus(information['status'])))
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Text("Send at: "),
+                  Text(parseDate(information['created_at']))
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Text("Difference in meters: "),
+                  Text(calculateDifference(information['distance'])
+                      .toStringAsFixed(2))
+                ],
+              ),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text(
+              "Ok",
+              style: TextStyle(color: Colors.blueAccent, fontSize: 18.0),
+            ),
+          )
+        ],
+      );
+    },
+  );
+}
+
+String parseDate(date) {
+  DateTime _convertedDate = DateTime.fromMillisecondsSinceEpoch(date * 1000);
+  return DateFormat('dd-MMM-yyyy HH:mm').format(_convertedDate).toString();
+}
+
+String parseDateFromString(date) {
+  DateTime _convertedDate = DateTime.parse(date);
+  return DateFormat('dd-MMM-yyyy HH:mm').format(_convertedDate).toString();
+}
+
+double calculateDifference(uncalculatedDistance) {
+  return double.parse(uncalculatedDistance) * 1000;
+}
+
 Color colorBasedOnStatus(String status) {
   if (status == 'APPROVED') {
     return Colors.green;
@@ -105,10 +176,15 @@ _showQuarantines(BuildContext context, User currentUser) {
               children: <Widget>[
                 Text("Expires at "),
                 Text(entries[index]['expires_at'] != null
-                    ? entries[index]['expires_at']
+                    ? parseDateFromString(entries[index]['expires_at'])
                     : '')
               ],
             ),
+            trailing: IconButton(
+                icon: Icon(Icons.info),
+                onPressed: () {
+                  showInfoDialog(entries[index], context);
+                }),
           ),
         );
       },

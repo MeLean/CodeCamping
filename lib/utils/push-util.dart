@@ -12,6 +12,7 @@ class PushNotifications with ChangeNotifier {
 
   Future<String> register() async {
     try {
+      print(await _firebaseMessaging.getToken());
       return await _firebaseMessaging.getToken();
     } catch (e) {
       throw (e);
@@ -42,6 +43,9 @@ class PushNotifications with ChangeNotifier {
         if(message.containsKey('data')) {
           APIUtil().setNotificationToken(message['data']['token']);
         }
+        Navigator.push(
+              this._context,
+              MaterialPageRoute(builder: (context) => HomePage()));
       }
     );
   }

@@ -3,8 +3,14 @@ import 'package:intl/intl.dart';
 import 'package:quatrace/models/user.dart';
 import 'package:quatrace/pages/home-page.dart';
 import 'package:quatrace/utils/api-util.dart';
-import 'package:quatrace/utils/location-util.dart';
 import 'package:quatrace/utils/push-util.dart';
+import 'package:google_maps_webservice/places.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
+import 'dart:async';
+
+const kGoogleApiKey = "AIzaSyAIGEt7nOqKiC-zM7cZzLf6gh_7I-bVcbo";
+
+GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKey);
 
 class SignUp extends StatefulWidget {
   SignUp({Key key}) : super(key: key);
@@ -18,13 +24,14 @@ class _SignUpState extends State<SignUp> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _locationUtils = LocationUtil();
+  final Map<String, double> _location = {};
   bool _isLoading = false;
 
   DateTime _initialDate = DateTime.now();
   String _parsedDate =
       DateFormat('dd MMM yyyy').format(DateTime.now()).toString();
   DateTime _actualDate = DateTime.now();
+  String _parsedLocation = 'Location';
 
   void showPicker(_context) async {
     final DateTime picked = await showDatePicker(
@@ -53,11 +60,32 @@ class _SignUpState extends State<SignUp> {
     }
   }
 
+  void showPlacesInput() async {
+    Prediction p = await PlacesAutocomplete.show(
+        context: context,
+        apiKey: kGoogleApiKey,
+        mode: Mode.overlay,
+        language: "bg",
+        components: [new Component(Component.country, "bg")]);
+    displayPrediction(p);
+  }
+
+  Future<Null> displayPrediction(Prediction p) async {
+    if (p != null) {
+      PlacesDetailsResponse detail =
+          await _places.getDetailsByPlaceId(p.placeId);
+      setState(() {
+        _parsedLocation = detail.result.name;
+        _location['lat'] = detail.result.geometry.location.lat;
+        _location['lng'] = detail.result.geometry.location.lng;
+      });
+    }
+  }
+
   void _submitFormData() async {
     setState(() {
       this._isLoading = true;
     });
-    final _location = await _locationUtils.getLocation();
     final _pushController = PushNotifications(context);
     final _fcmKey = await _pushController.register();
     double _unixTimestamp = _actualDate.millisecondsSinceEpoch / 1000;
@@ -163,7 +191,40 @@ class _SignUpState extends State<SignUp> {
                                             color: Colors.greenAccent,
                                           )
                                         ],
-                                      )
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        "Location",
+                                        style: TextStyle(
+                                            fontSize: 18.0,
+                                            color: Colors.grey.shade600),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: <Widget>[
+                                          Text(
+                                            "$_parsedLocation",
+                                            style: TextStyle(
+                                                fontSize: 15.0,
+                                                color: Colors.black),
+                                          ),
+                                          IconButton(
+                                            onPressed: showPlacesInput,
+                                            icon: Icon(Icons.location_city),
+                                            color: Colors.greenAccent,
+                                          )
+                                        ],
+                                      ),
                                     ],
                                   ),
                                 ),

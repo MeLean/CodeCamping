@@ -12,7 +12,7 @@ class APIUtil {
   }
 
   APIUtil._internal();
-  String _domain = '3452c037.ngrok.io';
+  String _domain = 'dfd5d6d2.ngrok.io';
   Map<String, String> _paths = {
     'token': '/api/auth/token',
     'userDetails': '/api/me',

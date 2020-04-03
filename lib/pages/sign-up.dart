@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:quatrace/pages/root.dart';
 import 'package:quatrace/models/user.dart';
-import 'package:quatrace/pages/home-page.dart';
 import 'package:quatrace/utils/api-util.dart';
 import 'package:quatrace/utils/push-util.dart';
 import 'package:google_maps_webservice/places.dart';
@@ -42,10 +42,10 @@ class _SignUpState extends State<SignUp> {
       builder: (BuildContext context, Widget child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            buttonColor: Colors.greenAccent,
-            primaryColor: Colors.greenAccent, //Head background
-            accentColor: Colors.greenAccent, //selection color
-            colorScheme: ColorScheme.light(primary: Colors.greenAccent),
+            buttonColor: Color(0xff29304d),
+            primaryColor: Color(0xff29304d), //Head background
+            accentColor: Color(0xff29304d), //selection color
+            colorScheme: ColorScheme.light(primary: Color(0xff29304d)),
             buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
           ),
           child: child,
@@ -100,7 +100,7 @@ class _SignUpState extends State<SignUp> {
     );
     await APIUtil().signUp(_user.toJson());
     Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (BuildContext context) => HomePage()));
+        MaterialPageRoute(builder: (BuildContext context) => MyApp()));
     setState(() {
       this._isLoading = false;
     });
@@ -108,148 +108,139 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Quatrace',
-            style: TextStyle(
-              color: Colors.white,
-            ),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.greenAccent,
-        ),
-        backgroundColor: Colors.grey.shade300,
-        body: Center(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                _isLoading
-                    ? CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.greenAccent))
-                    : Card(
-                        child: Padding(
-                          padding: EdgeInsets.all(20.0),
-                          child: Form(
-                            key: _formKey,
-                            child: Column(
-                              children: <Widget>[
-                                TextFormField(
-                                  controller: _nameController,
-                                  decoration: InputDecoration(
-                                    labelText: 'Name',
+    return Center(
+      child: SingleChildScrollView(
+        padding: EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            _isLoading
+                ? CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Colors.greenAccent))
+                : Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: <Widget>[
+                            TextFormField(
+                              controller: _nameController,
+                              decoration: InputDecoration(
+                                labelText: 'Name',
+                              ),
+                            ),
+                            TextFormField(
+                              controller: _emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              decoration: InputDecoration(
+                                labelText: 'Email',
+                              ),
+                            ),
+                            TextFormField(
+                              controller: _phoneController,
+                              keyboardType: TextInputType.phone,
+                              decoration: InputDecoration(
+                                labelText: 'Phone',
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 20.0),
+                            ),
+                            Container(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    "Quarantine end date",
+                                    style: TextStyle(
+                                        fontSize: 18.0,
+                                        color: Colors.grey.shade600),
                                   ),
-                                ),
-                                TextFormField(
-                                  controller: _emailController,
-                                  keyboardType: TextInputType.emailAddress,
-                                  decoration: InputDecoration(
-                                    labelText: 'Email',
-                                  ),
-                                ),
-                                TextFormField(
-                                  controller: _phoneController,
-                                  keyboardType: TextInputType.phone,
-                                  decoration: InputDecoration(
-                                    labelText: 'Phone',
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(top: 20.0),
-                                ),
-                                Container(
-                                  child: Column(
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                        CrossAxisAlignment.center,
                                     children: <Widget>[
                                       Text(
-                                        "Quarantine end date",
+                                        "$_parsedDate",
                                         style: TextStyle(
-                                            fontSize: 18.0,
-                                            color: Colors.grey.shade600),
+                                            fontSize: 15.0,
+                                            color: Colors.black),
                                       ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: <Widget>[
-                                          Text(
-                                            "$_parsedDate",
-                                            style: TextStyle(
-                                                fontSize: 15.0,
-                                                color: Colors.black),
-                                          ),
-                                          IconButton(
-                                            onPressed: () =>
-                                                showPicker(context),
-                                            icon: Icon(Icons.date_range),
-                                            color: Colors.greenAccent,
-                                          )
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                        "Location",
-                                        style: TextStyle(
-                                            fontSize: 18.0,
-                                            color: Colors.grey.shade600),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: <Widget>[
-                                          Text(
-                                            "$_parsedLocation",
-                                            style: TextStyle(
-                                                fontSize: 15.0,
-                                                color: Colors.black),
-                                          ),
-                                          IconButton(
-                                            onPressed: showPlacesInput,
-                                            icon: Icon(Icons.location_city),
-                                            color: Colors.greenAccent,
-                                          )
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(top: 20.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      FlatButton(
-                                        onPressed: _submitFormData,
-                                        child: Text('Submit'),
-                                        color: Colors.green,
-                                        textColor: Colors.white,
+                                      IconButton(
+                                        onPressed: () => showPicker(context),
+                                        icon: Icon(
+                                          Icons.date_range,
+                                          color: Color(0xff29304d),
+                                        ),
+                                        color: Colors.greenAccent,
                                       )
                                     ],
                                   ),
-                                )
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
+                            Container(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    "Location",
+                                    style: TextStyle(
+                                        fontSize: 18.0,
+                                        color: Colors.grey.shade600),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: <Widget>[
+                                      Text(
+                                        "$_parsedLocation",
+                                        style: TextStyle(
+                                            fontSize: 15.0,
+                                            color: Colors.black),
+                                      ),
+                                      IconButton(
+                                        onPressed: showPlacesInput,
+                                        icon: Icon(
+                                          Icons.location_city,
+                                          color: Color(0xff29304d),
+                                        ),
+                                        color: Colors.greenAccent,
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 20.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  FlatButton(
+                                    onPressed: _submitFormData,
+                                    child: Text('Submit'),
+                                    color: Color(0xff2573d5),
+                                    textColor: Colors.white,
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
                         ),
                       ),
-              ],
-            ),
-          ),
-        ));
+                    ),
+                  ),
+          ],
+        ),
+      ),
+    );
   }
 }

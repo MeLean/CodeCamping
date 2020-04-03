@@ -24,41 +24,26 @@ class _StatisticsState extends State<Statistics> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _fetchUser();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Quatrace',
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.greenAccent,
-      ),
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            _isLoading == true
-                ? Container(
-                    alignment: Alignment.center,
-                    child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.greenAccent)))
-                : Expanded(
-                    child: _showQuarantines(context, _currentUser),
-                  )
-          ],
-        ),
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        _isLoading == true
+            ? Container(
+                alignment: Alignment.center,
+                child: CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Colors.greenAccent)))
+            : Expanded(
+                child: _showQuarantines(context, _currentUser),
+              )
+      ],
     );
   }
 }
@@ -76,7 +61,7 @@ showInfoDialog(information, context) {
           style: TextStyle(color: Colors.green),
         ),
         content: Container(
-         child: Column(
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Row(

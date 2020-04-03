@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:quatrace/pages/home-page.dart';
-import 'package:quatrace/pages/sign-up.dart';
-import 'package:quatrace/utils/api-util.dart';
 import 'package:quatrace/utils/location-util.dart';
 import 'package:quatrace/utils/push-util.dart';
+import 'package:quatrace/utils/splash-screen-util.dart';
+import 'package:quatrace/pages/home-page.dart';
+import 'package:quatrace/pages/root.dart';
+import 'package:quatrace/pages/sign-up.dart';
+import 'package:quatrace/pages/statistics.dart';
 
 Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
+  // I don't know if this is still needed but i am too scared to remove it
+
   if (message.containsKey('data')) {
     // Handle data message
   }
@@ -17,111 +21,67 @@ Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
-void main() => runApp(MaterialApp(
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  PushNotifications.initializeListeners(showMessage, myBackgroundMessageHandler);
+  await LocationUtil().enableService();
+  await LocationUtil().getPermission();
+  runApp(
+    MaterialApp(
       title: 'Quatrace',
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
+      routes: {
+        '/sign-up': (context) => SignUp(),
+        '/statistics': (context) => Statistics(),
+        '/home-page': (context) => HomePage()
+      },
       theme: ThemeData(
           primarySwatch: Colors.blue, primaryColor: Colors.greenAccent),
-      home: MyApp(),
-    ));
-
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
+      home: AnimatedSplash(
+        backgroundColor: Color(0xff2573d5),
+        title: 'Quatrace',
+        subTitle: 'Stay at home, save a life',
+        home: MyApp(),
+        duration: 2500,
+        type: AnimatedSplashType.StaticDuration,
+      ),
+    ),
+  );
 }
 
-class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-    PushNotifications.initializeListeners(
-        showMessage, myBackgroundMessageHandler);
-    LocationUtil().enableService();
-    LocationUtil().getPermission();
-    _isItRegistered();
-  }
-
-  _isItRegistered() async {
-    final String fcmToken = await PushNotifications(context).register();
-    final bool isRegistered = await APIUtil().getToken(fcmToken);
-    if (isRegistered) {
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (BuildContext context) => HomePage()));
-    } else {
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (BuildContext context) => SignUp()));
-    }
-  }
-
-  showMessage(message) {
-    final currentContext = navigatorKey.currentState.overlay.context;
-    showDialog(
-      context: currentContext,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          title: Text(
-            message['notification']['title'],
-            style: TextStyle(color: Colors.red.shade900),
-          ),
-          content: Text(message['notification']['body']),
-          actions: <Widget>[
-            FlatButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => HomePage(),
-                  ),
-                );
-              },
-              child: Text(
-                "Verify",
-                style: TextStyle(color: Colors.greenAccent, fontSize: 18.0),
-              ),
-            )
-          ],
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+showMessage(message) {
+  final currentContext = navigatorKey.currentState.overlay.context;
+  showDialog(
+    context: currentContext,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
         title: Text(
-          'Quatrace',
-          style: TextStyle(
-            color: Colors.white,
-          ),
+          message['notification']['title'],
+          style: TextStyle(color: Colors.red.shade900),
         ),
-        centerTitle: true,
-        backgroundColor: Colors.greenAccent,
-      ),
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
-              child: Container(
-                  height: 220.0,
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(15.0)),
-                  alignment: Alignment.center,
-                  child: CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(Colors.greenAccent))),
-            )
-          ],
-        ),
-      ),
-    );
-  }
+        content: Text(message['notification']['body']),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => HomePage(),
+                ),
+              );
+            },
+            child: Text(
+              "Verify",
+              style: TextStyle(color: Colors.greenAccent, fontSize: 18.0),
+            ),
+          )
+        ],
+      );
+    },
+  );
 }

@@ -6,13 +6,12 @@ import 'package:http/http.dart' as http;
 
 class APIUtil {
   static final APIUtil _apiUrl = APIUtil._internal();
-
   factory APIUtil() {
     return _apiUrl;
   }
 
   APIUtil._internal();
-  String _domain = 'dfd5d6d2.ngrok.io';
+  String _domain = '56db699d.ngrok.io';
   Map<String, String> _paths = {
     'token': '/api/auth/token',
     'userDetails': '/api/me',

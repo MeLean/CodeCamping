@@ -13,6 +13,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool _isLoading = true;
   @override
   void initState() {
     super.initState();
@@ -41,29 +42,24 @@ class _HomePageState extends State<HomePage> {
       if (APIUtil().notificationTokenLength > 0) {
         Map<String, dynamic> _location = await LocationUtil().getLocation();
         await APIUtil().sentLocation(_location);
+        setState(() {
+          this._isLoading = false;
+        });
+        return;
       }
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => Statistics(),
-        ),
-      );
+      setState(() {
+        this._isLoading = false;
+      });
+    } else {
+      _authenticateUser();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Quatrace',
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.greenAccent,
-      ),
-      body: Container(),
+    return Container(
+      alignment: Alignment.center,
+      child: this._isLoading ? CircularProgressIndicator() : Statistics(),
     );
   }
 }

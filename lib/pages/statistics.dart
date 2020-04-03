@@ -176,7 +176,7 @@ _showQuarantines(BuildContext context, User currentUser) {
               children: <Widget>[
                 Text("Expires at "),
                 Text(entries[index]['expires_at'] != null
-                    ? parseDateFromString(entries[index]['expires_at'])
+                    ? parseDate(entries[index]['expires_at'])
                     : '')
               ],
             ),

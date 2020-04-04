@@ -4,26 +4,12 @@ import 'package:quatrace/utils/location-util.dart';
 import 'package:quatrace/utils/push-util.dart';
 import 'package:quatrace/utils/splash-screen-util.dart';
 import 'package:quatrace/pages/root.dart';
-import 'package:quatrace/pages/sign-up.dart';
-import 'package:quatrace/pages/statistics.dart';
-
-Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
-  // I don't know if this is still needed but i am too scared to remove it
-
-  if (message.containsKey('data')) {
-    // Handle data message
-  }
-
-  if (message.containsKey('notification')) {
-    // Handle notification message
-  }
-}
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  PushNotifications.initializeListeners(showMessage, myBackgroundMessageHandler);
+  PushNotifications.initializeListeners(showMessage);
   await LocationUtil().enableService();
   await LocationUtil().getPermission();
   runApp(
@@ -32,12 +18,18 @@ void main() async {
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          primarySwatch: Colors.blue, primaryColor: Colors.greenAccent),
+        primaryColor: Color(0xff1c3050),
+        accentColor: Color(0xff0288d1),
+        textTheme: TextTheme(
+          display1: TextStyle(fontSize: 18.0, color: Colors.grey.shade700, decoration: TextDecoration.none),
+          title: TextStyle(fontSize: 22.0, color: Colors.white, decoration: TextDecoration.none)
+        ),
+      ),
       home: AnimatedSplash(
-        backgroundColor: Color(0xff2573d5),
+        backgroundColor: Color(0xff0288d1),
         title: 'Quatrace',
         subTitle: 'Stay at home, save a life',
-        home: MyApp(),
+        home: SafeArea(child: MyApp()),
         duration: 2500,
         type: AnimatedSplashType.StaticDuration,
       ),

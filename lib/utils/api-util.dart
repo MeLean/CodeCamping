@@ -1,8 +1,9 @@
 import 'dart:convert';
-
-import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:quatrace/models/user.dart';
 import 'package:http/http.dart' as http;
+import 'package:async/async.dart';
+import 'dart:io';
 
 class APIUtil {
   static final APIUtil _apiUrl = APIUtil._internal();
@@ -16,7 +17,8 @@ class APIUtil {
     'token': '/api/auth/token',
     'userDetails': '/api/me',
     'signUp': '/api/auth/signup',
-    'notification': '/api/verifications/new'
+    'notification': '/api/verifications/new',
+    'upload': '/api/upload'
   };
   String _token = '';
   String _notificationToken = '';
@@ -109,4 +111,21 @@ class APIUtil {
       throw (e);
     }
   }
+
+  Future upload(File imageFile) async {    
+      var stream = new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
+      var length = await imageFile.length();
+      var uri = Uri.https(this._domain, this._paths['upload']);
+      var request = new http.MultipartRequest("POST", uri);
+      var multipartFile = new http.MultipartFile('file', stream, length,
+          filename: basename(imageFile.path));
+      request.files.add(multipartFile);
+      var response = await request.send();
+      print(response.statusCode);
+
+      // listen for response
+      response.stream.transform(utf8.decoder).listen((value) {
+        print(value);
+      });
+    }
 }

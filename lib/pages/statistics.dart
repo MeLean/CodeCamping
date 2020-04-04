@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:quatrace/models/user.dart';
 import 'package:quatrace/utils/api-util.dart';
+import 'package:quatrace/utils/auth-util.dart';
+import 'package:quatrace/utils/location-util.dart';
+import 'package:quatrace/utils/push-util.dart';
 
 class Statistics extends StatefulWidget {
   Statistics({Key key}) : super(key: key);
@@ -12,38 +15,38 @@ class Statistics extends StatefulWidget {
 
 class _StatisticsState extends State<Statistics> {
   User _currentUser;
-  bool _isLoading = true;
+  Future _fetchUserWrapper;
+  @override
+  void initState() { 
+    _fetchUserWrapper = _fetchUser();
+    super.initState(); 
+  }
 
   _fetchUser() async {
     _currentUser = await APIUtil().getUserDetails();
-    setState(() {
-      this._isLoading = false;
-    });
-    print(_currentUser.quarantineEntries);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchUser();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        _isLoading == true
-            ? Container(
-                alignment: Alignment.center,
-                child: CircularProgressIndicator(
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(Colors.greenAccent)))
-            : Expanded(
-                child: _showQuarantines(context, _currentUser),
-              )
-      ],
+    return FutureBuilder(
+      future: _fetchUserWrapper,
+      builder: (context, snapshot) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            snapshot.connectionState == ConnectionState.done
+                ? Expanded(
+                    child: _showQuarantines(context, _currentUser),
+                  )
+                : Container(
+                    alignment: Alignment.center,
+                    child: CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Colors.greenAccent)))
+          ],
+        );
+      },
     );
   }
 }

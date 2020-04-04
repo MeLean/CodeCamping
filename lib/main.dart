@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:quatrace/pages/auth.dart';
 import 'package:quatrace/utils/location-util.dart';
 import 'package:quatrace/utils/push-util.dart';
 import 'package:quatrace/utils/splash-screen-util.dart';
-import 'package:quatrace/pages/home-page.dart';
 import 'package:quatrace/pages/root.dart';
 import 'package:quatrace/pages/sign-up.dart';
 import 'package:quatrace/pages/statistics.dart';
@@ -31,11 +31,6 @@ void main() async {
       title: 'Quatrace',
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
-      routes: {
-        '/sign-up': (context) => SignUp(),
-        '/statistics': (context) => Statistics(),
-        '/home-page': (context) => HomePage()
-      },
       theme: ThemeData(
           primarySwatch: Colors.blue, primaryColor: Colors.greenAccent),
       home: AnimatedSplash(
@@ -71,7 +66,7 @@ showMessage(message) {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (BuildContext context) => HomePage(),
+                  builder: (BuildContext context) => AuthPage(),
                 ),
               );
             },

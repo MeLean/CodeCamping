@@ -6,18 +6,18 @@ import 'package:quatrace/utils/api-util.dart';
 import 'package:quatrace/utils/location-util.dart';
 import 'package:quatrace/utils/push-util.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage();
+class AuthPage extends StatefulWidget {
+  const AuthPage();
   @override
-  _HomePageState createState() => _HomePageState();
+  _AuthPageState createState() => _AuthPageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  bool _isLoading = true;
+class _AuthPageState extends State<AuthPage> {
+  Future _authenticateUserWrapper;
   @override
   void initState() {
+    _authenticateUserWrapper = _authenticateUser();
     super.initState();
-    _authenticateUser();
   }
 
   final LocalAuthentication _localAuthentication = LocalAuthentication();
@@ -25,11 +25,10 @@ class _HomePageState extends State<HomePage> {
     bool isAuthenticated = false;
     try {
       isAuthenticated = await _localAuthentication.authenticateWithBiometrics(
-        localizedReason:
-            "Please authenticate to view your transaction overview",
-        useErrorDialogs: true,
-        stickyAuth: true,
-      );
+          localizedReason:
+              "Please authenticate to view your transaction overview",
+          useErrorDialogs: true,
+          stickyAuth: true);
     } on PlatformException catch (e) {
       print(e);
     }
@@ -42,24 +41,25 @@ class _HomePageState extends State<HomePage> {
       if (APIUtil().notificationTokenLength > 0) {
         Map<String, dynamic> _location = await LocationUtil().getLocation();
         await APIUtil().sentLocation(_location);
-        setState(() {
-          this._isLoading = false;
-        });
-        return;
       }
-      setState(() {
-        this._isLoading = false;
-      });
     } else {
-      _authenticateUser();
+      setState(() {
+        _authenticateUserWrapper = _authenticateUser();
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      child: this._isLoading ? CircularProgressIndicator() : Statistics(),
-    );
+    return FutureBuilder(
+        future: _authenticateUserWrapper,
+        builder: (context, snapshot) {
+          return Container(
+            alignment: Alignment.center,
+            child: snapshot.connectionState == ConnectionState.done
+                ? Statistics()
+                : CircularProgressIndicator(),
+          );
+        });
   }
 }

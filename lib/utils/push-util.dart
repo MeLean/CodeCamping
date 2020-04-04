@@ -1,7 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:quatrace/pages/home-page.dart';
+import 'package:quatrace/pages/statistics.dart';
 import 'package:quatrace/utils/api-util.dart';
 
 class PushNotifications with ChangeNotifier {
@@ -36,7 +36,7 @@ class PushNotifications with ChangeNotifier {
         }
         Navigator.push(
               this._context,
-              MaterialPageRoute(builder: (context) => HomePage()));
+              MaterialPageRoute(builder: (context) => Statistics()));
       },
       onResume: (Map<String, dynamic> message) async {
         print('Should be seen from onResume $message');
@@ -45,7 +45,7 @@ class PushNotifications with ChangeNotifier {
         }
         Navigator.push(
               this._context,
-              MaterialPageRoute(builder: (context) => HomePage()));
+              MaterialPageRoute(builder: (context) => Statistics()));
       }
     );
   }

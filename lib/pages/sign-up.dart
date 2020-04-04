@@ -101,9 +101,6 @@ class _SignUpState extends State<SignUp> {
     await APIUtil().signUp(_user.toJson());
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: (BuildContext context) => MyApp()));
-    setState(() {
-      this._isLoading = false;
-    });
   }
 
   @override

@@ -5,6 +5,7 @@ import 'package:quatrace/pages/statistics.dart';
 import 'package:quatrace/utils/api-util.dart';
 import 'package:quatrace/utils/location-util.dart';
 import 'package:quatrace/utils/push-util.dart';
+import 'package:quatrace/utils/widget-utils.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage();
@@ -37,10 +38,10 @@ class _AuthPageState extends State<AuthPage> {
 
     if (isAuthenticated) {
       final fcmToken = await PushNotifications(context).register();
-      await APIUtil().getToken(fcmToken);
+      //await APIUtil().getToken(fcmToken);
       if (APIUtil().notificationTokenLength > 0) {
         Map<String, dynamic> _location = await LocationUtil().getLocation();
-        await APIUtil().sentLocation(_location);
+        //await APIUtil().sentLocation(_location);
       }
     } else {
       setState(() {
@@ -58,7 +59,7 @@ class _AuthPageState extends State<AuthPage> {
             alignment: Alignment.center,
             child: snapshot.connectionState == ConnectionState.done
                 ? Statistics()
-                : CircularProgressIndicator(),
+                : WidgetUtils().generateLoader(context, "Waiting for input..."),
           );
         });
   }

@@ -5,6 +5,7 @@ import 'package:quatrace/utils/api-util.dart';
 import 'package:quatrace/utils/auth-util.dart';
 import 'package:quatrace/utils/location-util.dart';
 import 'package:quatrace/utils/push-util.dart';
+import 'package:quatrace/utils/widget-utils.dart';
 
 class Statistics extends StatefulWidget {
   Statistics({Key key}) : super(key: key);
@@ -17,9 +18,9 @@ class _StatisticsState extends State<Statistics> {
   User _currentUser;
   Future _fetchUserWrapper;
   @override
-  void initState() { 
+  void initState() {
     _fetchUserWrapper = _fetchUser();
-    super.initState(); 
+    super.initState();
   }
 
   _fetchUser() async {
@@ -31,21 +32,29 @@ class _StatisticsState extends State<Statistics> {
     return FutureBuilder(
       future: _fetchUserWrapper,
       builder: (context, snapshot) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            snapshot.connectionState == ConnectionState.done
-                ? Expanded(
-                    child: _showQuarantines(context, _currentUser),
-                  )
-                : Container(
-                    alignment: Alignment.center,
-                    child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.greenAccent)))
-          ],
-        );
+        if (snapshot.connectionState == ConnectionState.done) {
+          return Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              title: Text(
+                "Validations",
+                style: Theme.of(context).textTheme.title,
+              ),
+              backgroundColor: Theme.of(context).primaryColor,
+            ),
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Expanded(
+                  child: _showQuarantines(context, _currentUser),
+                )
+              ],
+            ),
+          );
+        } else {
+          return WidgetUtils().generateLoader(context, "Fetching your data...");
+        }
       },
     );
   }
@@ -56,36 +65,46 @@ showInfoDialog(information, context) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
+        titlePadding: EdgeInsets.all(0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
-        title: Text(
-          "Validation infromation",
-          style: TextStyle(color: Colors.green),
+        title: Container(
+          decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
+              ),
+          padding: EdgeInsets.all(20.0),
+          child: Text(
+            "Validation infromation",
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         content: Container(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text("Status: "),
+                  Text("Status: ", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),),
                   Text(information['status'],
                       style: TextStyle(
                           color: colorBasedOnStatus(information['status'])))
                 ],
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text("Send at: "),
+                  Text("Send at: ", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),),
                   Text(parseDate(information['created_at']))
                 ],
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text("Difference in meters: "),
-                  Text(calculateDifference(information['distance'])
-                      .toStringAsFixed(2))
+                  Text("Difference: ", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),),
+                  Text(calculateDifference(information['distance']))
                 ],
               ),
             ],
@@ -96,9 +115,10 @@ showInfoDialog(information, context) {
             onPressed: () {
               Navigator.pop(context);
             },
+            color: Theme.of(context).accentColor,
             child: Text(
               "Ok",
-              style: TextStyle(color: Colors.blueAccent, fontSize: 18.0),
+              style: TextStyle(color: Colors.white, fontSize: 18.0),
             ),
           )
         ],
@@ -117,8 +137,9 @@ String parseDateFromString(date) {
   return DateFormat('dd-MMM-yyyy HH:mm').format(_convertedDate).toString();
 }
 
-double calculateDifference(uncalculatedDistance) {
-  return double.parse(uncalculatedDistance) * 1000;
+String calculateDifference(uncalculatedDistance) {
+  double distance = double.parse(uncalculatedDistance) * 1000;
+  return "${distance.toStringAsFixed(0)}m";
 }
 
 Color colorBasedOnStatus(String status) {

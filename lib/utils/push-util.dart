@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -19,9 +20,8 @@ class PushNotifications with ChangeNotifier {
     }
   }
 
-  PushNotifications.initializeListeners(showMessage, backgrounHandler) {
+  PushNotifications.initializeListeners(showMessage) {
     _firebaseMessaging.configure(
-      onBackgroundMessage: backgrounHandler,
       onMessage: (Map<String, dynamic> message) async {
         print('TEst $message');
         if(message.containsKey('data')) {

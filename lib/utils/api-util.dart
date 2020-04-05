@@ -11,7 +11,7 @@ class APIUtil {
   }
 
   APIUtil._internal();
-  String _domain = '830581f7.ngrok.io';
+  String _domain = 'quatrace.com';
   Map<String, String> _paths = {
     'token': '/api/auth/token',
     'userDetails': '/api/me',
@@ -41,7 +41,7 @@ class APIUtil {
   Future<bool> getToken(fcmKey) async {
     try {
       final response = await http.get(
-        Uri.http(this._domain, this._paths['token'], {"fcm_key": fcmKey}),
+        Uri.https(this._domain, this._paths['token'], {"fcm_key": fcmKey}),
         headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
       );
       this._token = jsonDecode(response.body)['access_token'];
@@ -57,7 +57,7 @@ class APIUtil {
   Future<User> getUserDetails() async {
     try {
       final response = await http.get(
-        Uri.http(this._domain, this._paths['userDetails']),
+        Uri.https(this._domain, this._paths['userDetails']),
         headers: {
           'Authorization': "Bearer ${this._token}",
           'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ class APIUtil {
   Future<bool> signUp(payload) async {
     try {
       final response = await http.post(
-        Uri.http(this._domain, this._paths['signUp']),
+        Uri.https(this._domain, this._paths['signUp']),
         headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
         body: jsonEncode(payload),
       );
@@ -93,7 +93,7 @@ class APIUtil {
 
     try {
       final response = await http.post(
-        Uri.http(this._domain, this._paths['notification']),
+        Uri.https(this._domain, this._paths['notification']),
         headers: {
           'Authorization': "Bearer ${this._token}",
           'Content-Type': 'application/json',

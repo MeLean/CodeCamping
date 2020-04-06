@@ -104,6 +104,20 @@ showInfoDialog(information, context) {
                   Text(calculateDifference(information['distance']))
                 ],
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text("Image equality: ", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),),
+                  Text(information['confidence'] == null ? '0%': "${information['confidence']}%" )
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text("Image verification: ", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),),
+                  setVerificationICon(information['is_identical'])
+                ],
+              ),
             ],
           ),
         ),
@@ -124,6 +138,13 @@ showInfoDialog(information, context) {
   );
 }
 
+Icon setVerificationICon(isIdentical) {
+  if(isIdentical == null || isIdentical == false) {
+    return Icon(Icons.clear, color: Colors.red, size: 28.0,);
+  }
+  return Icon(Icons.done, color: Colors.green, size: 28.0,);
+}
+
 String parseDate(date) {
   DateTime _convertedDate = DateTime.fromMillisecondsSinceEpoch(date * 1000);
   return DateFormat('dd-MMM-yyyy HH:mm').format(_convertedDate).toString();
@@ -135,6 +156,9 @@ String parseDateFromString(date) {
 }
 
 String calculateDifference(uncalculatedDistance) {
+  if(uncalculatedDistance == null) {
+    return '0m';
+  }
   double distance = double.parse(uncalculatedDistance) * 1000;
   return "${distance.toStringAsFixed(0)}m";
 }

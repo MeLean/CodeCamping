@@ -13,47 +13,49 @@ class Statistics extends StatefulWidget {
 
 class _StatisticsState extends State<Statistics> {
   User _currentUser;
-  Future _fetchUserWrapper;
+  bool _isLoading = true;
   @override
   void initState() {
-    _fetchUserWrapper = _fetchUser();
+    _fetchUser();
     super.initState();
   }
 
-  _fetchUser() async {
+  Future<void> _fetchUser() async {
+    setState(() {
+     _isLoading = true;
+    });
     _currentUser = await APIUtil().getUserDetails();
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _fetchUserWrapper,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return Scaffold(
-            appBar: AppBar(
-              centerTitle: true,
-              title: Text(
-                "Validations",
-                style: Theme.of(context).textTheme.title,
+    return _isLoading == true
+        ? WidgetUtils().generateLoader(context, "Fetching your data...")
+        : RefreshIndicator(
+            child: Scaffold(
+              appBar: AppBar(
+                centerTitle: true,
+                title: Text(
+                  "Validations",
+                  style: Theme.of(context).textTheme.title,
+                ),
+                backgroundColor: Theme.of(context).primaryColor,
               ),
-              backgroundColor: Theme.of(context).primaryColor,
+              body: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                    child: _showQuarantines(context, _currentUser),
+                  )
+                ],
+              ),
             ),
-            body: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Expanded(
-                  child: _showQuarantines(context, _currentUser),
-                )
-              ],
-            ),
+            onRefresh: _fetchUser,
           );
-        } else {
-          return WidgetUtils().generateLoader(context, "Fetching your data...");
-        }
-      },
-    );
   }
 }
 
@@ -68,9 +70,11 @@ showInfoDialog(information, context) {
         ),
         title: Container(
           decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
-              ),
+            color: Theme.of(context).primaryColor,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10.0),
+                topRight: Radius.circular(10.0)),
+          ),
           padding: EdgeInsets.all(20.0),
           child: Text(
             "Validation infromation",
@@ -84,7 +88,11 @@ showInfoDialog(information, context) {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text("Status: ", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),),
+                  Text(
+                    "Status: ",
+                    style:
+                        TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),
+                  ),
                   Text(information['status'],
                       style: TextStyle(
                           color: colorBasedOnStatus(information['status'])))
@@ -93,28 +101,46 @@ showInfoDialog(information, context) {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text("Verified at: ", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),),
+                  Text(
+                    "Verified at: ",
+                    style:
+                        TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),
+                  ),
                   Text(parseDate(information['updated_at']))
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text("Difference: ", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),),
+                  Text(
+                    "Difference: ",
+                    style:
+                        TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),
+                  ),
                   Text(calculateDifference(information['distance']))
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text("Image equality: ", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),),
-                  Text(information['confidence'] == null ? '0%': "${information['confidence']}%" )
+                  Text(
+                    "Image equality: ",
+                    style:
+                        TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),
+                  ),
+                  Text(information['confidence'] == null
+                      ? '0%'
+                      : "${information['confidence']}%")
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text("Image verification: ", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),),
+                  Text(
+                    "Image verification: ",
+                    style:
+                        TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),
+                  ),
                   setVerificationICon(information['is_identical'])
                 ],
               ),
@@ -139,10 +165,18 @@ showInfoDialog(information, context) {
 }
 
 Icon setVerificationICon(isIdentical) {
-  if(isIdentical == null || isIdentical == false) {
-    return Icon(Icons.clear, color: Colors.red, size: 28.0,);
+  if (isIdentical == null || isIdentical == false || isIdentical == 0) {
+    return Icon(
+      Icons.clear,
+      color: Colors.red,
+      size: 28.0,
+    );
   }
-  return Icon(Icons.done, color: Colors.green, size: 28.0,);
+  return Icon(
+    Icons.done,
+    color: Colors.green,
+    size: 28.0,
+  );
 }
 
 String parseDate(date) {
@@ -156,7 +190,7 @@ String parseDateFromString(date) {
 }
 
 String calculateDifference(uncalculatedDistance) {
-  if(uncalculatedDistance == null) {
+  if (uncalculatedDistance == null) {
     return '0m';
   }
   double distance = double.parse(uncalculatedDistance);

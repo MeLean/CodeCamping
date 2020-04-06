@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 Widget _home;
 Function _customFunction;
@@ -90,21 +91,16 @@ class _AnimatedSplashState extends State<AnimatedSplash>
         opacity: _animation,
         child: Center(
           child: SizedBox(
-            height: 250.0,
+            height: 450.0,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(
-                  _title,
-                  style: TextStyle(
-                      fontSize: 24.0,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700),
-                ),
-                Text(
-                  _subTitle,
-                  style: TextStyle(fontSize: 18.0, color: Colors.white),
-                ),
+                SvgPicture.asset(
+                  'assets/images/logo.svg',
+                  semanticsLabel: 'Quatrace',
+                  height: 220.0,
+                  color: Color(0xffc6deef)
+                )
               ],
             ),
           ),

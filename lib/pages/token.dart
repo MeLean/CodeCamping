@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:quatrace/pages/camera-screen.dart';
 import 'package:quatrace/utils/api-util.dart';
 import 'package:quatrace/utils/widget-utils.dart';
@@ -36,7 +37,7 @@ class _TokenAuthState extends State<TokenAuth> {
     });
   }
 
-  Widget _tokenUi() {
+  Widget _tokenUi(context) {
     return Container(
       padding: EdgeInsets.all(15.0),
       decoration: BoxDecoration(
@@ -45,12 +46,14 @@ class _TokenAuthState extends State<TokenAuth> {
       ),
       child: Column(
         children: [
-          Image.asset(
-            'assets/images/logo.png',
+          SvgPicture.asset(
+            'assets/images/logo.svg',
+            semanticsLabel: 'Quatrace',
             height: 140.0,
+            color: Theme.of(context).primaryColor,
           ),
           SizedBox(
-            height: 40.0,
+            height: 30.0,
           ),
           Row(
             children: <Widget>[
@@ -110,7 +113,7 @@ class _TokenAuthState extends State<TokenAuth> {
             color: Theme.of(context).primaryColor,
             child: SingleChildScrollView(
               padding: EdgeInsets.all(30.0),
-              child: _tokenUi(),
+              child: _tokenUi(context),
             ),
           );
   }

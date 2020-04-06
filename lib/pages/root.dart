@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quatrace/pages/auth.dart';
 import 'package:quatrace/pages/camera-screen.dart';
 import 'package:quatrace/pages/token.dart';
 import 'package:quatrace/utils/api-util.dart';
@@ -31,7 +32,11 @@ class _MyAppState extends State<MyApp> {
 
   Widget _whichPage() {
     if (this._isUserRegistered) {
-      return CameraScreen();
+      if (APIUtil().notificationTokenLength > 0) {
+        return CameraScreen();
+      } else {
+        return AuthPage();
+      }
     }
     return TokenAuth();
   }

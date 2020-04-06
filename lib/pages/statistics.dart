@@ -93,8 +93,8 @@ showInfoDialog(information, context) {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text("Send at: ", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),),
-                  Text(parseDate(information['created_at']))
+                  Text("Verified at: ", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),),
+                  Text(parseDate(information['updated_at']))
                 ],
               ),
               Row(
@@ -159,7 +159,7 @@ String calculateDifference(uncalculatedDistance) {
   if(uncalculatedDistance == null) {
     return '0m';
   }
-  double distance = double.parse(uncalculatedDistance) * 1000;
+  double distance = double.parse(uncalculatedDistance);
   return "${distance.toStringAsFixed(0)}m";
 }
 

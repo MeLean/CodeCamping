@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:quatrace/pages/auth.dart';
+import 'package:quatrace/pages/camera-screen.dart';
 import 'package:quatrace/utils/location-util.dart';
 import 'package:quatrace/utils/push-util.dart';
 import 'package:quatrace/utils/splash-screen-util.dart';
 import 'package:quatrace/pages/root.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
-
+Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
+  // I don't know if this is still needed but i am too scared to remove it
+  if (message.containsKey('data')) {
+    // Handle data message
+  }
+  if (message.containsKey('notification')) {
+    // Handle notification message
+  }
+}
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  PushNotifications.initializeListeners(showMessage);
+  PushNotifications.initializeListeners(showMessage, myBackgroundMessageHandler);
   await LocationUtil().enableService();
   await LocationUtil().getPermission();
   runApp(
@@ -44,12 +52,20 @@ showMessage(message) {
     barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
+        titlePadding: EdgeInsets.all(0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
-        title: Text(
-          message['notification']['title'],
-          style: TextStyle(color: Colors.red.shade900),
+        title: Container(
+          decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
+              ),
+          padding: EdgeInsets.all(20.0),
+          child: Text(
+            message['notification']['title'],
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         content: Text(message['notification']['body']),
         actions: <Widget>[
@@ -58,13 +74,14 @@ showMessage(message) {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (BuildContext context) => AuthPage(),
+                  builder: (BuildContext context) => CameraScreen(),
                 ),
               );
             },
+            color: Theme.of(context).accentColor,
             child: Text(
               "Verify",
-              style: TextStyle(color: Colors.greenAccent, fontSize: 18.0),
+              style: TextStyle(color: Colors.white, fontSize: 18.0),
             ),
           )
         ],

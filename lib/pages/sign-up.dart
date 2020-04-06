@@ -98,7 +98,7 @@ class _SignUpState extends State<SignUp> {
       _phoneController.text.trim(),
       _unixTimestamp.toInt(),
     );
-    await APIUtil().signUp(_user.toJson());
+    //await APIUtil().signUp(_user.toJson());
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: (BuildContext context) => MyApp()));
   }

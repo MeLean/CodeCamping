@@ -8,6 +8,7 @@ import 'package:quatrace/pages/auth.dart';
 import 'package:quatrace/pages/statistics.dart';
 import 'package:quatrace/utils/api-util.dart';
 import 'package:camera/camera.dart';
+import 'package:quatrace/utils/push-util.dart';
 import 'package:quatrace/utils/widget-utils.dart';
 
 class CameraScreen extends StatefulWidget {
@@ -36,7 +37,7 @@ class _CameraScreenState extends State<CameraScreen> {
   _initializeCamera() async {
     List<CameraDescription> _cameras = await availableCameras();
     setState(() {
-      _controller = CameraController(_cameras[0], ResolutionPreset.veryHigh);
+      _controller = CameraController(_cameras[1], ResolutionPreset.veryHigh);
     });
     await _controller.initialize();
     setState(() {
@@ -70,8 +71,8 @@ class _CameraScreenState extends State<CameraScreen> {
         '${DateTime.now()}.png',
       );
       await _controller.takePicture(path); //take photo
-      // await APIUtil().upload(File(path));
-      await Future.delayed(Duration(seconds: 2));
+      final String fcmKey = await PushNotifications(context).register();
+      await APIUtil().upload(File(path), fcmKey);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(

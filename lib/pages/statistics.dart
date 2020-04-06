@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:quatrace/models/user.dart';
 import 'package:quatrace/utils/api-util.dart';
-import 'package:quatrace/utils/auth-util.dart';
-import 'package:quatrace/utils/location-util.dart';
-import 'package:quatrace/utils/push-util.dart';
 import 'package:quatrace/utils/widget-utils.dart';
 
 class Statistics extends StatefulWidget {

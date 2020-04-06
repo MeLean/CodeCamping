@@ -37,11 +37,11 @@ class _AuthPageState extends State<AuthPage> {
     if (!mounted) return;
 
     if (isAuthenticated) {
-      final fcmToken = await PushNotifications(context).register();
-      //await APIUtil().getToken(fcmToken);
+        debugPrint("SHOULD SEND NOTIFICATIONS ------------------ ${APIUtil().notificationTokenLength}");
       if (APIUtil().notificationTokenLength > 0) {
         Map<String, dynamic> _location = await LocationUtil().getLocation();
-        //await APIUtil().sentLocation(_location);
+        debugPrint("SHOULD SEND NOTIFICATIONS ------------------------------------------------------------------------------------------ ${_location['lat']}");
+        await APIUtil().sentLocation(_location);
       }
     } else {
       setState(() {

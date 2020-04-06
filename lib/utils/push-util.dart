@@ -20,8 +20,9 @@ class PushNotifications with ChangeNotifier {
     }
   }
 
-  PushNotifications.initializeListeners(showMessage) {
+  PushNotifications.initializeListeners(showMessage, backgrounHandler) {
     _firebaseMessaging.configure(
+      onBackgroundMessage: backgrounHandler,
       onMessage: (Map<String, dynamic> message) async {
         print('TEst $message');
         if(message.containsKey('data')) {
@@ -32,20 +33,16 @@ class PushNotifications with ChangeNotifier {
       onLaunch: (Map<String, dynamic> message) async {
         print('Should be seen from onLaunch $message');
         if(message.containsKey('data')) {
+          debugPrint(message['data']['token']);
           APIUtil().setNotificationToken(message['data']['token']);
         }
-        Navigator.push(
-              this._context,
-              MaterialPageRoute(builder: (context) => Statistics()));
       },
       onResume: (Map<String, dynamic> message) async {
         print('Should be seen from onResume $message');
         if(message.containsKey('data')) {
+          debugPrint(message['data']['token']);
           APIUtil().setNotificationToken(message['data']['token']);
         }
-        Navigator.push(
-              this._context,
-              MaterialPageRoute(builder: (context) => Statistics()));
       }
     );
   }

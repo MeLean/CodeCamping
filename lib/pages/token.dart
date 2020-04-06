@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:quatrace/pages/camera-screen.dart';
+import 'package:quatrace/utils/api-util.dart';
 import 'package:quatrace/utils/widget-utils.dart';
 
 class TokenAuth extends StatefulWidget {
@@ -19,9 +20,9 @@ class _TokenAuthState extends State<TokenAuth> {
     setState(() {
       this._isLoading = true;
     });
-    await Future.delayed(Duration(milliseconds: 5000));
+    bool result = await APIUtil().authenticateToken(_tokenController.text);
     setState(() {
-      this._isTokenValid = true;
+      this._isTokenValid = result;
       if (this._isTokenValid) {
         Navigator.pushReplacement(
           context,
@@ -29,6 +30,8 @@ class _TokenAuthState extends State<TokenAuth> {
             builder: (BuildContext context) => CameraScreen(),
           ),
         );
+      } else {
+        this._isLoading = false;
       }
     });
   }
